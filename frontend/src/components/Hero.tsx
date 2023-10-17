@@ -10,6 +10,12 @@ import logoStaticKit from '@/images/logos/statickit.svg'
 import logoTransistor from '@/images/logos/transistor.svg'
 import logoTuple from '@/images/logos/tuple.svg'
 
+import { useEffect, useState } from 'react';
+import { useRouter } from 'next/router';
+import { SimpleLayout } from '@/components/SimpleLayout';
+import CopyToClipboard from 'react-copy-to-clipboard';
+import { saveAs } from 'file-saver'; // 导入saveAs函数
+
 
 export function Hero() {
 
@@ -34,6 +40,7 @@ export function Hero() {
       Most video platforms offer content, but overwhelm with length. We prioritize 
             concise overviews, hoping you enjoy more in less time.
       </p>
+
       {/* <div className="mt-10 flex justify-center gap-x-6">
         <Button href="/register">Get 6 months free</Button>
         <Button
@@ -55,7 +62,7 @@ export function Hero() {
         <UrlInput/>
       </div>
 
-      <div className="mt-36 lg:mt-44">
+      {/* <div className="mt-36 lg:mt-44">
         <p className="font-display text-base text-slate-900">
           Trusted by these six companies so far
         </p>
@@ -89,52 +96,70 @@ export function Hero() {
             </li>
           ))}
         </ul>
-      </div>
+      </div> */}
     </Container>
   )
 }
 
 // function UrlInput() {
-//   // const handleInputChange = (e) => {
-//   //   setVideoUrl(e.target.value);
-//   // };
-
 //   return (
-//     <input
-//       type="url"
-//       placeholder="Video URL"
-//       aria-label="Video URL"
-//       required
-//       //value={videoUrl}
-//       // onChange={handleInputChange}
-//       className="min-w-0 flex-auto appearance-none rounded-md border border-zinc-900/10 bg-white px-3 py-[calc(theme(spacing.2)-1px)] shadow-md shadow-zinc-800/5 placeholder:text-zinc-400 focus:border-teal-500 focus:outline-none focus:ring-4 focus:ring-teal-500/10 dark:border-zinc-700 dark:bg-zinc-700/[0.15] dark:text-zinc-200 dark:placeholder:text-zinc-500 dark:focus:border-teal-400 dark:focus:ring-teal-400/10 sm:text-sm"
-//     />
-//     <Button type="submit" className="ml-4 flex-none">
-//       Summary
-//     </Button>
-//   );
+//     <form
+//       action="/summary"
+//       className="rounded-2xl border border-zinc-100 p-6 dark:border-zinc-700/40"
+//     >
+
+//       <div className="mt-6 flex">
+//         <input
+//           type="url"
+//           placeholder="Video URL"
+//           aria-label="Video URL"
+//           required
+//           className="min-w-0 flex-auto appearance-none rounded-md border border-zinc-900/10 bg-white px-3 py-[calc(theme(spacing.2)-1px)] shadow-md shadow-zinc-800/5 placeholder:text-zinc-400 focus:border-teal-500 focus:outline-none focus:ring-4 focus:ring-teal-500/10 dark:border-zinc-700 dark:bg-zinc-700/[0.15] dark:text-zinc-200 dark:placeholder:text-zinc-500 dark:focus:border-teal-400 dark:focus:ring-teal-400/10 sm:text-sm"
+//         />
+//         <Button type="submit" className="ml-4 flex-none">
+//           Summary
+//         </Button>
+//       </div>
+//     </form>
+//   )
 // }
 
-
 function UrlInput() {
-  return (
-    <form
-      action="/summary"
-      className="rounded-2xl border border-zinc-100 p-6 dark:border-zinc-700/40"
-    >
+  const [inputValue, setInputValue] = useState(''); // 创建一个名为 inputValue 的状态
+  const [displayedValue, setDisplayedValue] = useState(''); // 创建一个名为 displayedValue 的状态
 
-      <div className="mt-6 flex">
-        <input
-          type="url"
-          placeholder="Video URL"
-          aria-label="Video URL"
-          required
-          className="min-w-0 flex-auto appearance-none rounded-md border border-zinc-900/10 bg-white px-3 py-[calc(theme(spacing.2)-1px)] shadow-md shadow-zinc-800/5 placeholder:text-zinc-400 focus:border-teal-500 focus:outline-none focus:ring-4 focus:ring-teal-500/10 dark:border-zinc-700 dark:bg-zinc-700/[0.15] dark:text-zinc-200 dark:placeholder:text-zinc-500 dark:focus:border-teal-400 dark:focus:ring-teal-400/10 sm:text-sm"
-        />
-        <Button type="submit" className="ml-4 flex-none">
-          Summary
-        </Button>
-      </div>
-    </form>
-  )
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    // 当按钮点击时，更新 displayedValue 状态为用户输入的视频URL
+    setDisplayedValue(inputValue);
+  };
+
+  return (
+    <div>
+      <form
+        onSubmit={handleSubmit}
+        className="rounded-2xl border border-zinc-100 p-6 dark:border-zinc-700/40"
+      >
+        <div className="mt-6 flex">
+          <input
+            type="url"
+            placeholder="Video URL"
+            aria-label="Video URL"
+            required
+            // 将输入的值与状态 inputValue 关联
+            value={inputValue}
+            // 当输入框的值发生变化时更新 inputValue 状态
+            onChange={(e) => setInputValue(e.target.value)}
+            className="min-w-0 flex-auto appearance-none rounded-md border border-zinc-900/10 bg-white px-3 py-[calc(theme(spacing.2)-1px)] shadow-md shadow-zinc-800/5 placeholder:text-zinc-400 focus:border-teal-500 focus:outline-none focus:ring-4 focus:ring-teal-500/10 dark:border-zinc-700 dark:bg-zinc-700/[0.15] dark:text-zinc-200 dark:placeholder:text-zinc-500 dark:focus:border-teal-400 dark:focus:ring-teal-400/10 sm:text-sm"
+          />
+          <Button type="submit" className="ml-4 flex-none">
+            Summary
+          </Button>
+        </div>
+      </form>
+      {displayedValue && (
+        <p className="mt-2">您输入的视频URL是：{displayedValue}</p>
+      )}
+    </div>
+  );
 }
