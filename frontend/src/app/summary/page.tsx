@@ -61,7 +61,7 @@ function Summary() {
   };
 
   return (
-    <SimpleLayout title="Summary for video" intro="">""
+    <SimpleLayout title="Summary for video" intro="">
       {summaryData ? (
         <div>
           {/* <h1>Summary 页面</h1>
