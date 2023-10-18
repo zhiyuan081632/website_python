@@ -1,8 +1,5 @@
 "use client"; // This is a client component 
 import Image from 'next/image'
-
-import { Button } from '@/components/Button'
-import { Container } from '@/components/Container'
 import logoLaravel from '@/images/logos/laravel.svg'
 import logoMirage from '@/images/logos/mirage.svg'
 import logoStatamic from '@/images/logos/statamic.svg'
@@ -10,17 +7,93 @@ import logoStaticKit from '@/images/logos/statickit.svg'
 import logoTransistor from '@/images/logos/transistor.svg'
 import logoTuple from '@/images/logos/tuple.svg'
 
-import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
-import { SimpleLayout } from '@/components/SimpleLayout';
-import CopyToClipboard from 'react-copy-to-clipboard';
-import { saveAs } from 'file-saver'; // 导入saveAs函数
+import { useEffect, useState } from 'react';
+import { Button } from '@/components/Button';
+import { Container } from '@/components/Container';
+import { Card } from '@/components/Card'
+import { formatDate } from '@/lib/formatDate'
+import ReactMarkdown from 'react-markdown';
+
+interface Article {
+  title: string;
+  data: string;
+  description: string;
+}
+
+const article1: Article = {
+  title: "Title",
+  data: "DATADATADATADAATA",
+  description:"DESDESDESDES"
+};
+
+function Article({ article }: { article: Article }) {
+  return (
+    <Card as="article">
+      <Card.Title href={`/articles/${article.slug}`}>
+        {article.title}
+      </Card.Title>
+      <Card.Eyebrow as="time" dateTime={article.date} decorate>
+        {formatDate(article.date)} 
+      </Card.Eyebrow>
+      <Card.Description>{article.description}</Card.Description> 
+      <Card.Cta>Read article</Card.Cta>
+    </Card>
+  )
+}
+
 
 
 export function Hero() {
 
+  // 创建状态变量来存储输入框的值和服务端返回的数据
+  const [inputValue, setInputValue] = useState('');
+  const [summaryData, setSummaryData] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+
+  // 定义发送请求的函数
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    
+    try {
+      setIsLoading(true);
+
+      // 发送请求给对话服务端
+      const response = await fetch('http://localhost:5000/api/validate', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(inputValue),
+      });
+
+      if (!response.ok) {
+        throw new Error('网络请求失败');
+      }
+
+      // 接收并解析服务端的回复数据
+      const data = await response.json();
+
+      // 将回复数据保存到状态中，并清空输入框的值
+      setSummaryData(data);
+      // setInputValue('');
+      article1.description=data.reply
+
+    } catch (error) {
+      console.error('发生错误:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+
+
+
+
   return (
     <Container className="pb-16 pt-20 text-center lg:pt-32">
+
+      {/* Title */}
       <h1 className="mx-auto max-w-4xl font-display text-5xl font-medium tracking-tight text-slate-900 sm:text-7xl">
         Summary {' '}
         <span className="relative whitespace-nowrap text-blue-600">
@@ -41,30 +114,30 @@ export function Hero() {
             concise overviews, hoping you enjoy more in less time.
       </p>
 
-      {/* <div className="mt-10 flex justify-center gap-x-6">
-        <Button href="/register">Get 6 months free</Button>
-        <Button
-          href="https://www.youtube.com/watch?v=dQw4w9WgXcQ"
-          variant="outline"
-        >
-          <svg
-            aria-hidden="true"
-            className="h-3 w-3 flex-none fill-blue-600 group-active:fill-current"
-          >
-            <path d="m9.997 6.91-7.583 3.447A1 1 0 0 1 1 9.447V2.553a1 1 0 0 1 1.414-.91L9.997 5.09c.782.355.782 1.465 0 1.82Z" />
-          </svg>
-          <span className="ml-3">Watch video</span>
-        </Button>
-      </div> */}
-
-      {/* new code */}
+      {/* 显示输入框和按钮 */}
       <div className="space-y-10 lg:pl-16 xl:pl-24">
-        <UrlInput/>
-      </div>
+        <form onSubmit={handleSubmit}>
+          <div className="mt-6 flex">
+            <input
+              type=""
+              placeholder="Video URL"
+              aria-label="Video URL"
+              required
+              value={inputValue}
+              onChange={(e) => setInputValue(e.target.value)}
+              className="min-w-0 flex-auto appearance-none rounded-md border border-zinc-900/10 bg-white px-3 py-[calc(theme(spacing.2)-1px)] shadow-md shadow-zinc-800/5 placeholder:text-zinc-400 focus:border-teal-500 focus:outline-none focus:ring-4 focus:ring-teal-500/10 dark:border-zinc-700 dark:bg-zinc-700/[0.15] dark:text-zinc-200 dark:placeholder:text-zinc-500 dark:focus:border-teal-400 dark:focus:ring-teal-400/10 sm:text-sm"
+            />
+            {/* 根据加载状态设置按钮文本 */}
+            <Button type="submit" className="ml-4 flex-none">
+              {isLoading ? 'Loading...' : 'Summary'}
+            </Button>
+          </div>
+       </form> 
 
-      {/* <div className="mt-36 lg:mt-44">
+      {/* LOGO */}
+      <div className="mt-36 lg:mt-44">
         <p className="font-display text-base text-slate-900">
-          Trusted by these six companies so far
+          Supported Websites
         </p>
         <ul
           role="list"
@@ -96,70 +169,74 @@ export function Hero() {
             </li>
           ))}
         </ul>
-      </div> */}
-    </Container>
-  )
-}
+      </div>
 
-// function UrlInput() {
-//   return (
-//     <form
-//       action="/summary"
-//       className="rounded-2xl border border-zinc-100 p-6 dark:border-zinc-700/40"
-//     >
+      <div className="max-w-2xl">
+          {/* <h1 className="text-4xl font-bold tracking-tight text-zinc-800 dark:text-zinc-100 sm:text-5xl">
+            Software designer, founder, and amateur astronaut.
+          </h1>
+          <p className="mt-6 text-base text-zinc-600 dark:text-zinc-400">
+            I’m Spencer, a software designer and entrepreneur based in New York
+            City. I’m the founder and CEO of Planetaria, where we develop
+            technologies that empower regular people to explore space on their
+            own terms.
+          </p> */}
+          {/* <div className="mt-6 flex gap-6">
+            <SocialLink
+              href="https://twitter.com"
+              aria-label="Follow on Twitter"
+              icon={TwitterIcon}
+            />
+            <SocialLink
+              href="https://instagram.com"
+              aria-label="Follow on Instagram"
+              icon={InstagramIcon}
+            />
+            <SocialLink
+              href="https://github.com"
+              aria-label="Follow on GitHub"
+              icon={GitHubIcon}
+            />
+            <SocialLink
+              href="https://linkedin.com"
+              aria-label="Follow on LinkedIn"
+              icon={LinkedInIcon}
+            />
+          </div> */}
 
-//       <div className="mt-6 flex">
-//         <input
-//           type="url"
-//           placeholder="Video URL"
-//           aria-label="Video URL"
-//           required
-//           className="min-w-0 flex-auto appearance-none rounded-md border border-zinc-900/10 bg-white px-3 py-[calc(theme(spacing.2)-1px)] shadow-md shadow-zinc-800/5 placeholder:text-zinc-400 focus:border-teal-500 focus:outline-none focus:ring-4 focus:ring-teal-500/10 dark:border-zinc-700 dark:bg-zinc-700/[0.15] dark:text-zinc-200 dark:placeholder:text-zinc-500 dark:focus:border-teal-400 dark:focus:ring-teal-400/10 sm:text-sm"
-//         />
-//         <Button type="submit" className="ml-4 flex-none">
-//           Summary
-//         </Button>
-//       </div>
-//     </form>
-//   )
-// }
+          {/* <div className="flex justify-center">
+            <Article key="Title" article={article1}/>
+          </div> */}
 
-function UrlInput() {
-  const [inputValue, setInputValue] = useState(''); // 创建一个名为 inputValue 的状态
-  const [displayedValue, setDisplayedValue] = useState(''); // 创建一个名为 displayedValue 的状态
 
-  const handleSubmit = (event) => {
-    event.preventDefault();
-    // 当按钮点击时，更新 displayedValue 状态为用户输入的视频URL
-    setDisplayedValue(inputValue);
-  };
 
-  return (
-    <div>
-      <form
-        onSubmit={handleSubmit}
-        className="rounded-2xl border border-zinc-100 p-6 dark:border-zinc-700/40"
-      >
-        <div className="mt-6 flex">
-          <input
-            type="url"
-            placeholder="Video URL"
-            aria-label="Video URL"
-            required
-            // 将输入的值与状态 inputValue 关联
-            value={inputValue}
-            // 当输入框的值发生变化时更新 inputValue 状态
-            onChange={(e) => setInputValue(e.target.value)}
-            className="min-w-0 flex-auto appearance-none rounded-md border border-zinc-900/10 bg-white px-3 py-[calc(theme(spacing.2)-1px)] shadow-md shadow-zinc-800/5 placeholder:text-zinc-400 focus:border-teal-500 focus:outline-none focus:ring-4 focus:ring-teal-500/10 dark:border-zinc-700 dark:bg-zinc-700/[0.15] dark:text-zinc-200 dark:placeholder:text-zinc-500 dark:focus:border-teal-400 dark:focus:ring-teal-400/10 sm:text-sm"
-          />
-          <Button type="submit" className="ml-4 flex-none">
-            Summary
-          </Button>
         </div>
-      </form>
-      {displayedValue && (
-        <p className="mt-2">您输入的视频URL是：{displayedValue}</p>
-      )}
-    </div>
+
+      {/* 显示回复消息 */}
+      {/* {summaryData && (
+        <p className="mx-auto mt-6 max-w-2xl text-lg tracking-tight text-slate-700">
+          {summaryData.reply}
+        </p>
+      )} */}
+
+      
+      {summaryData && (
+        <div className="flex justify-center">
+          <div style={{ width: '800px', height: '400px', position: 'relative', textAlign: 'left'}}>
+            <Article key="Title" article={article1} />
+            <div style={{ position: 'absolute', top: '0', right: '0', display: 'flex', gap: '8px' }}>
+              <button>copy</button>
+              <button>download</button>
+            </div>
+          </div>
+      </div>
+      
+      )} 
+
+
+
+      </div>
+    </Container>
   );
 }
+
