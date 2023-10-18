@@ -10,10 +10,12 @@ import logoTuple from '@/images/logos/tuple.svg'
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 import { Button } from '@/components/Button';
+import { Button2 } from '@/components/Button2';
 import { Container } from '@/components/Container';
 import { Card } from '@/components/Card'
 import { formatDate } from '@/lib/formatDate'
 import ReactMarkdown from 'react-markdown';
+
 
 interface Article {
   title: string;
@@ -30,7 +32,7 @@ const article1: Article = {
 function Article({ article }: { article: Article }) {
   return (
     <Card as="article">
-      <Card.Title href={`/articles/${article.slug}`}>
+      <Card.Title href=''>
         {article.title}
       </Card.Title>
       <Card.Eyebrow as="time" dateTime={article.date} decorate>
@@ -40,6 +42,58 @@ function Article({ article }: { article: Article }) {
       <Card.Cta>Read article</Card.Cta>
     </Card>
   )
+}
+
+function ArrowDownIcon(props: React.ComponentPropsWithoutRef<'svg'>) {
+  return (
+    <svg viewBox="0 0 16 16" fill="none" aria-hidden="true" {...props}>
+      <path
+        d="M4.75 8.75 8 12.25m0 0 3.25-3.5M8 12.25v-8.5"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  )
+}
+
+function CopyIcon(props: React.ComponentPropsWithoutRef<'svg'>) {
+  return (
+    <svg viewBox="0 0 16 16" fill="none" aria-hidden="true" {...props}>
+      <path
+        d="M6.5 1.5H3a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h7a2 2 0 0 0 2-2v-3.5"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M8.5 6.5V2.286a1 1 0 0 1 1.828-.572L13.97 5.43a1 1 0 0 1 0 1.142l-3.642 3.716a1 1 0 0 1-1.828-.572V9.5"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
+
+function ClipboardIcon(props: React.ComponentPropsWithoutRef<'svg'>) {
+  return (
+    <svg viewBox="0 0 16 16" fill="none" aria-hidden="true" {...props}>
+      <path
+        d="M4.5 2.5H3a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h9a2 2 0 0 0 2-2v-7.5"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M7.5 1.5v3a1 1 0 0 1-1 1H3a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h9a2 2 0 0 0 2-2v-7"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
 }
 
 
@@ -85,8 +139,6 @@ export function Hero() {
       setIsLoading(false);
     }
   };
-
-
 
 
 
@@ -171,67 +223,27 @@ export function Hero() {
         </ul>
       </div>
 
-      <div className="max-w-2xl">
-          {/* <h1 className="text-4xl font-bold tracking-tight text-zinc-800 dark:text-zinc-100 sm:text-5xl">
-            Software designer, founder, and amateur astronaut.
-          </h1>
-          <p className="mt-6 text-base text-zinc-600 dark:text-zinc-400">
-            I’m Spencer, a software designer and entrepreneur based in New York
-            City. I’m the founder and CEO of Planetaria, where we develop
-            technologies that empower regular people to explore space on their
-            own terms.
-          </p> */}
-          {/* <div className="mt-6 flex gap-6">
-            <SocialLink
-              href="https://twitter.com"
-              aria-label="Follow on Twitter"
-              icon={TwitterIcon}
-            />
-            <SocialLink
-              href="https://instagram.com"
-              aria-label="Follow on Instagram"
-              icon={InstagramIcon}
-            />
-            <SocialLink
-              href="https://github.com"
-              aria-label="Follow on GitHub"
-              icon={GitHubIcon}
-            />
-            <SocialLink
-              href="https://linkedin.com"
-              aria-label="Follow on LinkedIn"
-              icon={LinkedInIcon}
-            />
-          </div> */}
-
-          {/* <div className="flex justify-center">
-            <Article key="Title" article={article1}/>
-          </div> */}
-
-
-
-        </div>
-
-      {/* 显示回复消息 */}
-      {/* {summaryData && (
-        <p className="mx-auto mt-6 max-w-2xl text-lg tracking-tight text-slate-700">
-          {summaryData.reply}
-        </p>
-      )} */}
-
-      
+      {/* 显示内容 */}          
       {summaryData && (
         <div className="flex justify-center">
-          <div style={{ width: '800px', height: '400px', position: 'relative', textAlign: 'left'}}>
+          <div style={{ width: '800px', height: '400px', position: 'relative', textAlign: 'left' }}>
             <Article key="Title" article={article1} />
-            <div style={{ position: 'absolute', top: '0', right: '0', display: 'flex', gap: '8px' }}>
-              <button>copy</button>
-              <button>download</button>
+            <div style={{ position: 'absolute', top: '0', right: '0', display: 'flex', alignItems: 'flex-start', flexDirection: 'column', padding: '16px' }}>
+              <div style={{ display: 'flex', gap: '8px' }}>
+                <Button2 href="#" variant="secondary">
+                  Copy
+                  <ClipboardIcon className="h-4 w-4 stroke-zinc-400 transition group-active:stroke-zinc-600 dark:group-hover:stroke-zinc-50 dark:group-active:stroke-zinc-50" />
+                </Button2>
+
+                <Button2 href="#" variant="secondary">
+                  Download
+                  <ArrowDownIcon className="h-4 w-4 stroke-zinc-400 transition group-active:stroke-zinc-600 dark:group-hover:stroke-zinc-50 dark:group-active:stroke-zinc-50" />
+                </Button2>
+              </div>
             </div>
           </div>
-      </div>
-      
-      )} 
+        </div>
+      )}
 
 
 
